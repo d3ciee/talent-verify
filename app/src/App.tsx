@@ -3,10 +3,12 @@ import { Header, Stack } from "@nordhealth/react";
 import "./App.css";
 import { SignInPage } from "./routes/SignIn/SignIn";
 import { SignUpPage } from "./routes/SignUp/SignUp";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { AuthContext } from "./types/context/auth";
 import { LoadingScreen } from "./screens/LoadingScreen";
 import { ErrorScreen } from "./screens/ErrorScreen";
+import { getAccountService } from "./services/getAccount";
+import { Account } from "./types/company/account";
 
 const router = createBrowserRouter([
   {
@@ -24,22 +26,39 @@ const router = createBrowserRouter([
 ]);
 
 export const authContext = createContext<AuthContext>({
-  isLoggedIn: false,
+  isLoggedIn: null,
   account: null,
 });
 
 function App() {
   const [getAuthState, setGetAuthState] = useState<
     "LOADING" | "SUCCESS" | "ERROR"
-  >("ERROR");
+  >("LOADING");
 
   const [error, setError] = useState("");
+  const [authContextState, setAuthContextState] = useState<AuthContext>({
+    isLoggedIn: null,
+    account: null,
+  });
 
   useEffect(() => {
     (async () => {
-      const resp = getAccount();
+      const resp = await getAccountService();
+
+      if (resp.status === "error") {
+        if (resp.message === "ERR_NOT_SIGNED_IN") {
+          setGetAuthState("SUCCESS");
+          setAuthContextState({ isLoggedIn: false, account: null });
+          return;
+        }
+        setGetAuthState("ERROR");
+        setError(resp?.description ?? "");
+      }
+
+      setGetAuthState("SUCCESS");
+      setAuthContextState({ isLoggedIn: true, account: resp?.data as Account });
     })();
-  });
+  }, []);
 
   switch (getAuthState) {
     case "LOADING":
@@ -66,9 +85,11 @@ function App() {
       return (
         <>
           <main className="n-reset n-stack-horizontal">
-            <Stack className="stack">
-              <RouterProvider router={router} />
-            </Stack>
+            <authContext.Provider value={authContextState}>
+              <Stack className="stack">
+                <RouterProvider router={router} />
+              </Stack>
+            </authContext.Provider>
           </main>
         </>
       );

@@ -23,6 +23,7 @@ export default function useField(
     setError,
     valid,
     value,
+    id: name,
     focus: () => ref.current?.focus(),
     inputProps: {
       name,

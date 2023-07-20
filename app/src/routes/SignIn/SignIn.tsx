@@ -3,8 +3,12 @@ import Styles from "./SignIn.module.css";
 import { Card, Stack, Input, Button } from "@nordhealth/react";
 import useField from "../../hooks/useField";
 import { signInService } from "../../services/signIn";
+import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 export function SignInPage() {
+  const { GuardComponent } = useAuth();
+
   const email = useField("email", /^\S+@\S+\.\S+$/);
   const password = useField("password");
 
@@ -37,54 +41,56 @@ export function SignInPage() {
     }
   }
   return (
-    <div className={Styles["container"]}>
-      <Card padding="l" className={Styles["card"]}>
-        <h2 slot="header">Sign in to Talent Verify</h2>
-        <form action="#" onSubmit={handleSubmit}>
-          <Stack direction="vertical">
-            <Input
-              label="Email"
+    <GuardComponent on={true} goto={`/c`}>
+      <div className={Styles["container"]}>
+        <Card padding="l" className={Styles["card"]}>
+          <h2 slot="header">Sign in to Talent Verify</h2>
+          <form action="#" onSubmit={handleSubmit}>
+            <Stack direction="vertical">
+              <Input
+                label="Email"
+                expand
+                required
+                type="email"
+                placeholder="user@example.com"
+                {...email.inputProps}
+              />
+
+              <Input
+                label="Password"
+                expand
+                required
+                type="password"
+                placeholder="••••••••"
+                {...password.inputProps}
+              />
+            </Stack>
+
+            <label
+              style={{
+                marginTop: "var(--n-space-xs)",
+                color: "var(--n-color-text-error)",
+              }}
+            >
+              ㅤ{error}
+            </label>
+
+            <Button
+              loading={loading}
+              className={Styles["submit-button"]}
+              type="submit"
               expand
-              required
-              type="email"
-              placeholder="user@example.com"
-              {...email.inputProps}
-            />
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </form>
+        </Card>
 
-            <Input
-              label="Password"
-              expand
-              required
-              type="password"
-              placeholder="••••••••"
-              {...password.inputProps}
-            />
-          </Stack>
-
-          <label
-            style={{
-              marginTop: "var(--n-space-xs)",
-              color: "var(--n-color-text-error)",
-            }}
-          >
-            ㅤ{error}
-          </label>
-
-          <Button
-            loading={loading}
-            className={Styles["submit-button"]}
-            type="submit"
-            expand
-            variant="primary"
-          >
-            Continue
-          </Button>
-        </form>
-      </Card>
-
-      <Card className={Styles["card"]}>
-        <a href="/sign-in">Don't have an account?</a>
-      </Card>
-    </div>
+        <Card className={Styles["card"]}>
+          <Link to="/sign-up">Don't have an account?</Link>
+        </Card>
+      </div>
+    </GuardComponent>
   );
 }

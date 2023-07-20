@@ -3,8 +3,12 @@ import Styles from "./SignUp.module.css";
 import { Card, Stack, Input, Button } from "@nordhealth/react";
 import useField from "../../hooks/useField";
 import { signUpService } from "../../services/signUp";
+import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 export function SignUpPage() {
+  const { GuardComponent } = useAuth();
+
   const email = useField("email", /^\S+@\S+\.\S+$/);
   const password = useField(
     "password",
@@ -46,65 +50,67 @@ export function SignUpPage() {
     }
   }
   return (
-    <div className={Styles["container"]}>
-      <Card padding="l" className={Styles["card"]}>
-        <h2 slot="header">Sign up for Talent Verify</h2>
-        <form action="#" onSubmit={handleSubmit}>
-          <Stack direction="vertical">
-            <Input
-              label="Email"
-              hint="NB: Use this email to log into your account later."
+    <GuardComponent on={true} goto={`/c`}>
+      <div className={Styles["container"]}>
+        <Card padding="l" className={Styles["card"]}>
+          <h2 slot="header">Sign up for Talent Verify</h2>
+          <form action="#" onSubmit={handleSubmit}>
+            <Stack direction="vertical">
+              <Input
+                label="Email"
+                hint="NB: Use this email to log into your account later."
+                expand
+                required
+                type="email"
+                placeholder="user@example.com"
+                {...email.inputProps}
+              />
+
+              <Input
+                label="Password"
+                expand
+                required
+                hint="Minimum eight characters, at least one letter and one number"
+                type="password"
+                placeholder="••••••••"
+                {...password.inputProps}
+              />
+
+              <Input
+                label="Confirm Password"
+                expand
+                required
+                type="password"
+                placeholder="••••••••"
+                {...confirmPassword.inputProps}
+              />
+            </Stack>
+
+            <label
+              style={{
+                marginTop: "var(--n-space-xs)",
+                color: "var(--n-color-text-error)",
+              }}
+            >
+              ㅤ{error}
+            </label>
+
+            <Button
+              loading={loading}
+              className={Styles["submit-button"]}
+              type="submit"
               expand
-              required
-              type="email"
-              placeholder="user@example.com"
-              {...email.inputProps}
-            />
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </form>
+        </Card>
 
-            <Input
-              label="Password"
-              expand
-              required
-              hint="Minimum eight characters, at least one letter and one number"
-              type="password"
-              placeholder="••••••••"
-              {...password.inputProps}
-            />
-
-            <Input
-              label="Confirm Password"
-              expand
-              required
-              type="password"
-              placeholder="••••••••"
-              {...confirmPassword.inputProps}
-            />
-          </Stack>
-
-          <label
-            style={{
-              marginTop: "var(--n-space-xs)",
-              color: "var(--n-color-text-error)",
-            }}
-          >
-            ㅤ{error}
-          </label>
-
-          <Button
-            loading={loading}
-            className={Styles["submit-button"]}
-            type="submit"
-            expand
-            variant="primary"
-          >
-            Continue
-          </Button>
-        </form>
-      </Card>
-
-      <Card className={Styles["card"]}>
-        <a href="/sign-in">Already have an account?</a>
-      </Card>
-    </div>
+        <Card className={Styles["card"]}>
+          <Link to="/sign-in">Already have an account?</Link>
+        </Card>
+      </div>
+    </GuardComponent>
   );
 }
