@@ -1,26 +1,32 @@
 import { Account } from "../types/company/account";
 import { APIResponse } from "../types/global";
 
-export const getAccountService: () => Promise<
-  APIResponse<Account>
-> = async () => {
+interface updateAccountDetailsProps {
+  companyName: string;
+  companyRegNo: string;
+  companyRegDate: string;
+  contactPerson: string;
+  contactPhone: string;
+  companyAddress: string;
+}
+
+export const updateAccountDetails: (
+  arg0: updateAccountDetailsProps
+) => Promise<APIResponse<Account>> = async () => {
   const resp = await new Promise<APIResponse<Account>>((res, _) => {
     //TODO:-> talk to django be.  for now, mock 👍
 
     const timeout = setTimeout(() => {
       res(
-        false
+        true
           ? {
               status: "error",
-              message: "ERR_NOT_SIGNED_IN",
+              message: "ERR_INTERNAL",
+              description: "The update failed for 123...",
             }
           : {
               status: "success",
-              message: "ACC_LOGGED_IN",
-              data: {
-                company_id: "123",
-                company_name: "Freeman & Co",
-              },
+              message: "ACC_UPDATED",
             }
       );
       clearTimeout(timeout);

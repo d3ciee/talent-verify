@@ -9,6 +9,8 @@ import { LoadingScreen } from "./screens/LoadingScreen";
 import { ErrorScreen } from "./screens/ErrorScreen";
 import { getAccountService } from "./services/getAccount";
 import { Account } from "./types/company/account";
+import { CompanyDetails } from "./routes/CompanyDetails/CompanyDetails";
+import { Dashboard } from "./routes/Dashboard/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +24,14 @@ const router = createBrowserRouter([
   {
     path: "/sign-in",
     element: <SignInPage />,
+  },
+  {
+    path: "/details",
+    element: <CompanyDetails />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
 ]);
 
