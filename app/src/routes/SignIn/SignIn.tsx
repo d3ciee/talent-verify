@@ -9,7 +9,7 @@ import useAuth from "../../hooks/useAuth";
 export function SignInPage() {
   const { GuardComponent } = useAuth();
 
-  const email = useField("email", /^\S+@\S+\.\S+$/);
+  const username = useField("username");
   const password = useField("password");
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,10 +19,10 @@ export function SignInPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!email.valid) {
-      if (!email.value) email.setError("An email is required.");
-      email.setError("Please enter a valid email");
-      email.focus();
+    if (!username.valid) {
+      if (!username.value) username.setError("An email is required.");
+      username.setError("Please enter a valid email");
+      username.focus();
     }
 
     if (!password.value) {
@@ -30,9 +30,9 @@ export function SignInPage() {
       password.setError("A password is required.");
     }
 
-    if (email.valid && password.valid) {
+    if (username.valid && password.valid) {
       setLoading(true);
-      const resp = await signInService(email.value, password.value);
+      const resp = await signInService(username.value, password.value);
 
       if (resp.status === "success") return (window.location.href = "/details");
 
@@ -48,12 +48,12 @@ export function SignInPage() {
           <form action="#" onSubmit={handleSubmit}>
             <Stack direction="vertical">
               <Input
-                label="Email"
+                label="Username"
                 expand
                 required
-                type="email"
-                placeholder="user@example.com"
-                {...email.inputProps}
+                type="text"
+                placeholder="peter_g"
+                {...username.inputProps}
               />
 
               <Input

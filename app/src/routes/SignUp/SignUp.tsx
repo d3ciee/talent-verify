@@ -9,7 +9,7 @@ import useAuth from "../../hooks/useAuth";
 export function SignUpPage() {
   const { GuardComponent } = useAuth();
 
-  const email = useField("email", /^\S+@\S+\.\S+$/);
+  const username = useField("username");
   const password = useField(
     "password",
     /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
@@ -22,10 +22,10 @@ export function SignUpPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!email.valid) {
-      if (!email.value) email.setError("An email is required.");
-      email.setError("Please enter a valid email");
-      email.focus();
+    if (!username.valid) {
+      if (!username.value) username.setError("An email is required.");
+      username.setError("Please enter a valid email");
+      username.focus();
     }
 
     if (!password.valid) {
@@ -39,9 +39,13 @@ export function SignUpPage() {
       confirmPassword.focus();
     }
 
-    if (email.valid && password.valid) {
+    if (username.valid && password.valid) {
       setLoading(true);
-      const resp = await signUpService(email.value, password.value);
+      const resp = await signUpService(
+        username.value,
+        password.value,
+        confirmPassword.value
+      );
 
       if (resp.status === "success") return (window.location.href = "/details");
 
@@ -57,13 +61,13 @@ export function SignUpPage() {
           <form action="#" onSubmit={handleSubmit}>
             <Stack direction="vertical">
               <Input
-                label="Email"
-                hint="NB: Use this email to log into your account later."
+                label="Username"
+                hint="NB: Use this username to log into your account later."
                 expand
                 required
-                type="email"
-                placeholder="user@example.com"
-                {...email.inputProps}
+                type="text"
+                placeholder="peter"
+                {...username.inputProps}
               />
 
               <Input
@@ -92,7 +96,7 @@ export function SignUpPage() {
                 color: "var(--n-color-text-error)",
               }}
             >
-              ㅤ{error}
+              {error}ㅤ
             </label>
 
             <Button

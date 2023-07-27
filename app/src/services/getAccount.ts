@@ -4,28 +4,31 @@ import { APIResponse } from "../types/global";
 export const getAccountService: () => Promise<
   APIResponse<Account>
 > = async () => {
-  const resp = await new Promise<APIResponse<Account>>((res, _) => {
-    //TODO:-> talk to django be.  for now, mock 👍
+  try {
+    const resp = await fetch("http://localhost:8000/company/get/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + sessionStorage.getItem("key"),
+      },
+    });
 
-    const timeout = setTimeout(() => {
-      res(
-        false
-          ? {
-              status: "error",
-              message: "ERR_NOT_SIGNED_IN",
-            }
-          : {
-              status: "success",
-              message: "ACC_LOGGED_IN",
-              data: {
-                company_id: "123",
-                company_name: "Freeman & Co",
-              },
-            }
-      );
-      clearTimeout(timeout);
-    }, 1000);
-  });
-
-  return resp;
+    if (resp.status === 200) {
+      const data = await resp.json();
+      if (data.status === "error") {
+        return {
+          status: "success",
+          data: null,
+        };
+      }
+      return { status: "success", data };
+    }
+    throw new Error("ERR_GET_ACCOUNT");
+  } catch (error) {
+    return {
+      status: "error",
+      message: "ERR_GET_ACCOUNT",
+      description: "Something went wrong while getting account",
+    };
+  }
 };
